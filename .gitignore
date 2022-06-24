@@ -12,8 +12,9 @@ venv
 ehthumbs.db
 Thumbs.db
 env/
-frontend/node_modules/
 frontend/.env
+frontend/node_modules/
+.env
 backend/__pycache__
 backend/api.http
 backend/venv/
