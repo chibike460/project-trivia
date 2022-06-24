@@ -13,7 +13,8 @@ database_user = os.getenv('DATABASE_USER')
 test_database_name = os.getenv('TEST_DATABASE_NAME')
 database_host = os.getenv('DATABASE_HOST', 'localhost:5432')
 
-database_path = "postgresql://{}@{}/{}".format(database_user, database_host, test_database_name)
+database_path = "postgresql://{}@{}/{}".format(
+    database_user, database_host, test_database_name)
 
 new_question = {
     'question': 'Who is the best basketbal player of all time?',
@@ -40,14 +41,15 @@ class TriviaTestCase(unittest.TestCase):
             self.db.init_app(self.app)
             # create all tables
             self.db.create_all()
-    
+
     def tearDown(self):
         """Executed after reach test"""
         pass
-    
+
     """
     @Todo: Test to get categories - Success
     """
+
     def test_get_categories(self):
         res = self.client().get("/categories")
         data = json.loads(res.data)
@@ -58,16 +60,18 @@ class TriviaTestCase(unittest.TestCase):
     """
     @Todo: Test to get categories - Failure
     """
+
     def test_get_categories_failure(self):
         res = self.client().get("/categories/10000")
         data = json.loads(res.data)
         self.assertEqual(res.status_code, 404)
         self.assertEqual(data["success"], False)
         self.assertEqual(data["message"], "Resource not found")
-    
+
     """
     @Todo: Test to get questions - Success
     """
+
     def test_get_questions(self):
         res = self.client().get("/questions")
         data = json.loads(res.data)
@@ -80,6 +84,7 @@ class TriviaTestCase(unittest.TestCase):
     """
     @Todo: Test to get questions per page - Success
     """
+
     def test_get_questions_per_page(self):
         res = self.client().get("/questions?page=1")
         data = json.loads(res.data)
@@ -92,6 +97,7 @@ class TriviaTestCase(unittest.TestCase):
     """
     @Todo: Test to get questons per page - Failure (pagination value is invalid)
     """
+
     def test_404_get_questions_per_page(self):
         res = self.client().get("/questions?page=1000")
         data = json.loads(res.data)
@@ -102,6 +108,7 @@ class TriviaTestCase(unittest.TestCase):
     """
     @Todo: Test to delete a question - Success
     """
+
     def test_delete_question(self):
         res = self.client().delete("/questions/3")
         data = json.loads(res.data)
@@ -111,6 +118,7 @@ class TriviaTestCase(unittest.TestCase):
     """
     @Todo: Test to delete a question - Failure (id out of range)
     """
+
     def test_404_delete_question(self):
         res = self.client().delete("/questions/1000")
         data = json.loads(res.data)
@@ -121,6 +129,7 @@ class TriviaTestCase(unittest.TestCase):
     """
     @Todo: Test to create a new question - Success
     """
+
     def test_create_question(self):
         res = self.client().post("/questions", json=new_question)
         data = json.loads(res.data)
@@ -134,8 +143,13 @@ class TriviaTestCase(unittest.TestCase):
     """
     @Todo: Test create a new question  - Failure
     """
+
     def test_404_create_question(self):
-        res = self.client().post("/questions", json={"question": "Who is the best basketball player of all time?", "answer": "Michael Jordan"})
+        res = self.client().post(
+            "/questions",
+            json={
+                "question": "Who is the best basketball player of all time?",
+                "answer": "Michael Jordan"})
         data = json.loads(res.data)
         self.assertEqual(res.status_code, 422)
         self.assertEqual(data["success"], False)
@@ -158,6 +172,7 @@ class TriviaTestCase(unittest.TestCase):
     """
     @Todo: Test get questions by category - Failure (category out of range)
     """
+
     def test_404_if_category_not_found(self):
         res = self.client().get('/categories/10000/questions')
 
@@ -169,8 +184,12 @@ class TriviaTestCase(unittest.TestCase):
     """
     @Todo: Test get questions by search term - Success
     """
+
     def test_get_questions_by_search_term(self):
-        res = self.client().post('/questions/search', json={'searchTerm': 'invent'})
+        res = self.client().post(
+            '/questions/search',
+            json={
+                'searchTerm': 'invent'})
 
         data = json.loads(res.data)
         self.assertEqual(res.status_code, 200)
@@ -182,6 +201,7 @@ class TriviaTestCase(unittest.TestCase):
     """
     @Todo Test get questions by search term - Failure ("searchTearm"  is wrongly spelt e.g "search" instead of "searchTerm")
     """
+
     def test_400_if_searchTerm_wrongly_spelt(self):
         res = self.client().post('/questions/search', json={'searc': 'invent'})
 
@@ -194,6 +214,7 @@ class TriviaTestCase(unittest.TestCase):
     """
     @Todo Test get questions by search term - Failure ("searchTearm"  is empty or has substring not found in any question)
     """
+
     def test_404_if_searchTerm_is_empty(self):
         res = self.client().post('/questions/search', json={'searchTerm': ''})
 
@@ -202,10 +223,11 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(res.status_code, 404)
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], 'Resource not found')
-    
+
     """
     @Todo Test to play game - Success
     """
+
     def test_play_game(self):
         body = {
             'previous_questions': [2, 4, 6],
@@ -214,7 +236,7 @@ class TriviaTestCase(unittest.TestCase):
             }
         }
         res = self.client().post('/quizzes', json=body)
-        
+
         data = json.loads(res.data)
         self.assertEqual(res.status_code, 200)
         self.assertEqual(data["success"], True)
@@ -223,6 +245,7 @@ class TriviaTestCase(unittest.TestCase):
     """
     @Todo Test to play game - Failure (e.g: quiz_category is not in the request body or provided a value)
     """
+
     def test_404_if_quiz_category_not_found(self):
         body = {
             'previous_questions': [2, 4, 6],
@@ -231,15 +254,11 @@ class TriviaTestCase(unittest.TestCase):
             }
         }
         res = self.client().post('/quizzes', json=body)
-        
+
         data = json.loads(res.data)
         self.assertEqual(res.status_code, 404)
         self.assertEqual(data["success"], False)
         self.assertEqual(data["message"], "Resource not found")
-    
-
-
-
 
 
 # Make the tests conveniently executable

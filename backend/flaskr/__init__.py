@@ -11,16 +11,21 @@ from models import setup_db, Question, Category
 
 QUESTIONS_PER_PAGE = 10
 
+
 def create_app(test_config=None):
     # create and configure the app
     app = Flask(__name__)
     setup_db(app)
     cors = CORS(app, resources={r"*": {"origins": "*"}})
-    
+
     @app.after_request
     def after_request(response):
-        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization,true')
-        response.headers.add('Access-Control-Allow-Methods', 'GET,PATCH,PUT,POST,DELETE,OPTIONS')
+        response.headers.add(
+            'Access-Control-Allow-Headers',
+            'Content-Type,Authorization,true')
+        response.headers.add(
+            'Access-Control-Allow-Methods',
+            'GET,PATCH,PUT,POST,DELETE,OPTIONS')
         return response
 
     def paginate_questions(request, selection):
@@ -30,7 +35,7 @@ def create_app(test_config=None):
 
         questions = [question.format() for question in selection]
         current_questions = questions[start:end]
-        
+
         return current_questions
 
     """
@@ -40,12 +45,13 @@ def create_app(test_config=None):
     def get_categories():
         try:
             all_categories = Category.query.order_by(Category.id).all()
-            categories = {category.id: category.type for category in all_categories}
+            categories = {
+                category.id: category.type for category in all_categories}
             return jsonify({
                 "success": True,
                 "categories": categories
             })
-        except:
+        except BaseException:
             abort(422)
 
     """
@@ -74,7 +80,8 @@ def create_app(test_config=None):
     @app.route('/questions/<int:question_id>', methods=['DELETE'])
     def delete_question(question_id):
         try:
-            question = Question.query.filter(Question.id == question_id).one_or_none()
+            question = Question.query.filter(
+                Question.id == question_id).one_or_none()
             question.delete()
             return jsonify({
                 "success": True,
@@ -82,7 +89,7 @@ def create_app(test_config=None):
                 "message": "Question deleted",
                 "total_questions": len(Question.query.all())
             })
-        except:
+        except BaseException:
             abort(404)
 
     """
@@ -99,13 +106,18 @@ def create_app(test_config=None):
         if not (new_question and new_answer and new_category and new_difficulty):
             abort(422)
         try:
-            question = Question(question=new_question, answer=new_answer, category=new_category, difficulty=new_difficulty)
+            question = Question(
+                question=new_question,
+                answer=new_answer,
+                category=new_category,
+                difficulty=new_difficulty)
             question.insert()
-            question = Question.query.filter(Question.id == question.id).one_or_none()
+            question = Question.query.filter(
+                Question.id == question.id).one_or_none()
             question = question.format()
             question["success"] = True
             return jsonify(question)
-        except:
+        except BaseException:
             abort(422)
 
     """
@@ -114,7 +126,8 @@ def create_app(test_config=None):
     @app.route('/categories/<int:category_id>/questions')
     def get_questions_by_category(category_id):
         category = Category.query.get(category_id)
-        selection = Question.query.filter(Question.category == category_id).all()
+        selection = Question.query.filter(
+            Question.category == category_id).all()
         current_questions = paginate_questions(request, selection)
 
         if len(current_questions) == 0 or not category:
@@ -134,13 +147,15 @@ def create_app(test_config=None):
     def search_questions():
         body = request.get_json()
         search_term = body.get('searchTerm', None)
-        selection = Question.query.filter(Question.question.ilike(f'%{search_term}%')).all()
+        selection = Question.query.filter(
+            Question.question.ilike(f'%{search_term}%')).all()
         current_questions = paginate_questions(request, selection)
-        if search_term == None:
+        if search_term is None:
             abort(400)
         elif len(current_questions) == 0 or search_term == "":
             abort(404)
-        current_category_type = Category.query.filter(Category.id == selection[0].category).one_or_none().type
+        current_category_type = Category.query.filter(
+            Category.id == selection[0].category).one_or_none().type
         return jsonify({
             "success": True,
             "questions": current_questions,
@@ -157,7 +172,6 @@ def create_app(test_config=None):
         previous_questions = body.get('previous_questions', None)
         quiz_category = body.get('quiz_category', None)
 
-
         # for i in previous_questions:
         #     if i not in Question.query.filter(Question.id == i).all():
         #         abort(404)
@@ -165,15 +179,15 @@ def create_app(test_config=None):
             if quiz_category['id'] == 0:
                 selection = Question.query.all()
             else:
-                selection = Question.query.filter(Question.category == quiz_category['id']).all()
+                selection = Question.query.filter(
+                    Question.category == quiz_category['id']).all()
             quiz_questions = [question.format() for question in selection]
-            quiz_questions = [question for question in quiz_questions if question['id'] not in previous_questions]
+            quiz_questions = [
+                question for question in quiz_questions if question['id'] not in previous_questions]
             random.shuffle(quiz_questions)
-            return jsonify({
-                "success": True,
-                "question": quiz_questions[0] if len(quiz_questions) > 0 else None,
-            })
-        except:
+            return jsonify({"success": True, "question": quiz_questions[0] if len(
+                quiz_questions) > 0 else None, })
+        except BaseException:
             abort(404)
 
     """
@@ -220,4 +234,3 @@ def create_app(test_config=None):
         }), 500
 
     return app
-
