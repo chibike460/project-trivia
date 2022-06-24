@@ -7,8 +7,9 @@ from dotenv import load_dotenv
 load_dotenv()
 database_name = os.getenv('DATABASE_NAME')
 database_user = os.getenv('DATABASE_USER')
+database_host = os.getenv('DATABASE_HOST', 'localhost:5432')
 
-database_path = "postgresql://{}@{}/{}".format(database_user, 'localhost:5432', database_name)
+database_path = "postgresql://{}@{}/{}".format(database_user, database_host, database_name)
 
 db = SQLAlchemy()
 

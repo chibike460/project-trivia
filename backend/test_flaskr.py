@@ -11,7 +11,9 @@ load_dotenv()
 
 database_user = os.getenv('DATABASE_USER')
 test_database_name = os.getenv('TEST_DATABASE_NAME')
-database_path = "postgresql://{}@{}/{}".format(database_user, 'localhost:5432', test_database_name)
+database_host = os.getenv('DATABASE_HOST', 'localhost:5432')
+
+database_path = "postgresql://{}@{}/{}".format(database_user, database_host, test_database_name)
 
 new_question = {
     'question': 'Who is the best basketbal player of all time?',
