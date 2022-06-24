@@ -193,7 +193,7 @@ The API will return five error types when requests fail. They include:
 ```
 
 
-#### _GET **/categories/{category_id}/questions**.._
+#### _GET **/categories/{category_id}/questions**_
 - General:
     - Returns a list of questions based on category, success value, total number of questions in that category, categories and current category.
     - Results are paginated in groups of 10. 
