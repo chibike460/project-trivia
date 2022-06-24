@@ -108,7 +108,7 @@ class TriviaTestCase(unittest.TestCase):
     """
     @Todo: Test to delete a question - Success
     """
-    # Please use an id that exists in your database. At the time of writing, 5 works fine.
+    # Please use an id that exists in your database. At the time of writing, 5 works fine or 2.
     def test_delete_question(self):
         res = self.client().delete("/questions/5")
         data = json.loads(res.data)
