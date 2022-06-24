@@ -171,10 +171,7 @@ def create_app(test_config=None):
         body = request.get_json()
         previous_questions = body.get('previous_questions', None)
         quiz_category = body.get('quiz_category', None)
-
-        # for i in previous_questions:
-        #     if i not in Question.query.filter(Question.id == i).all():
-        #         abort(404)
+        
         try:
             if quiz_category['id'] == 0:
                 selection = Question.query.all()
