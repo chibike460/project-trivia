@@ -153,7 +153,7 @@ The API will return five error types when requests fail. They include:
 
 ```
 
-#### _POST **/books**_
+#### _POST **/questions**_
 - General:
     - Creates a new question, which will require the question and answer text, category, and difficulty score. 
     - Returns the id of the created question, success value, total questions, and question list based on current page number to update the frontend. 
